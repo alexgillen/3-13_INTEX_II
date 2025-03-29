@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import './CategoryFilter.css';
 
 function CategoryFilter ({selectedCategories, setSelectedCategories}: {selectedCategories: string[]; setSelectedCategories: (categories: string[]) => void}) 
 {

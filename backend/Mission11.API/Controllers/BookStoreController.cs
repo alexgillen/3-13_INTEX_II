@@ -15,14 +15,21 @@ namespace Mission11.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(int pageSize = 10, int pageNum = 1)
+        public IActionResult Get(int pageSize = 10, int pageNum = 1, [FromQuery] List<string>? categories = null)
         {
-            var something = _bookContext.Books
+            var query = _bookContext.Books.AsQueryable();
+
+            if (categories != null && categories.Any())
+            {
+                query = query.Where(b => categories.Contains(b.Category));
+            }
+
+            var totalNumBooks = query.Count();
+
+            var something = query
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-
-            var totalNumBooks = _bookContext.Books.Count();
 
             var someObject = new
             {
