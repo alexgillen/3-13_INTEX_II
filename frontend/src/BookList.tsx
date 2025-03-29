@@ -10,11 +10,10 @@ function BookList() {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [isSorted, setIsSorted] = useState<boolean>(false);
 
-
     useEffect(() => {
         const fetchBooks = async () => {
             const response = await fetch(
-                `http://localhost:3550/api/BookStore?pageSize=${pageSize}&pageNum=${pageNum}`
+                `https://localhost:5001/api/BookStore?pageSize=${pageSize}&pageNum=${pageNum}`
             )
             const data = await response.json();
             setBooks(data.books);
@@ -77,6 +76,50 @@ function BookList() {
                     </div>
                 </div>
             ))}
+
+            <button
+                className='btn btn-secondary'
+                onClick={() => setPageNum(pageNum - 1)}
+                disabled={pageNum === 1}
+            >
+                Previous
+            </button>
+
+            {[...Array(totalPages)].map((_, index) => (
+                <button
+                    key={index + 1}
+                    className={`btn ${pageNum === index + 1 ? 'btn-primary' : 'btn-secondary'} mx-1`}
+                    onClick={() => setPageNum(index + 1)}
+                    disabled={pageNum === index + 1}
+                >
+                    {index + 1}
+                </button>
+            ))}
+
+            <button
+                className='btn btn-secondary'
+                onClick={() => setPageNum(pageNum + 1)}
+                disabled={pageNum === totalPages}
+            >
+                Next
+            </button>
+
+            <br />
+            <label className='mt-3'>
+                <strong>Results per page: </strong>
+                <select
+                    className='form-select w-auto d-inline-block ms-2'
+                    value={pageSize}
+                    onChange={(p) => {
+                        setPageSize(Number(p.target.value))
+                        setPageNum(1);
+                    }}
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                </select>
+            </label>
         </>
     );
 }
