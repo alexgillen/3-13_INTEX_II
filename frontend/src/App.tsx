@@ -1,12 +1,11 @@
-import { useState } from 'react'
 import './App.css'
-import BookList from './BookList'
+import BookPage from './pages/BookPage'
 
 function App() {
 
   return (
     <>
-      <BookList />
+      <BookPage />
     </>
   )
 }
