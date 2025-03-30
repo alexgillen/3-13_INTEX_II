@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Book } from '../types/Book'
+import { useNavigate } from 'react-router-dom';
 
 function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [books, setBooks] = useState<Book[]>([]);
@@ -9,6 +10,7 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [totalItems, setTotalItems] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [isSorted, setIsSorted] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -39,9 +41,6 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
 
     return (
         <>
-            <h1>Book List</h1>
-            <br />
-
             {!isSorted && (
                 <button
                     className="btn btn-primary mb-3"
@@ -52,7 +51,14 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
             )}
 
             {sortedBooks.map((book) => (
-                <div id="bookCard" className="card mb-3" key={book.bookId}>
+                <div 
+                    id="bookCard" 
+                    className="card mb-3" 
+                    key={book.bookId}
+                    style={{ transition: ".03s", cursor: "pointer" }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+                    onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                >
                     <h3 className="card-title p-2">{book.title}</h3>
                     <div className="card-body">
                         <ul className="list-unstyled">
@@ -78,6 +84,16 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
                                 <strong>Price:</strong> ${book.price}
                             </li>
                         </ul>
+
+                        <button
+                            className='btn btn-success'
+                            onClick={() => navigate(`/purchase/${book.title}/${book.bookId}/${book.price}`)}
+                            style={{ transition: ".03s", cursor: "pointer" }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+                            onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                        >
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
             ))}
