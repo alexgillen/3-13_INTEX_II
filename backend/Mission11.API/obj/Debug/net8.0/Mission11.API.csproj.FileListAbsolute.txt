@@ -135,3 +135,10 @@ C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11
 C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\obj\Debug\net8.0\Mission11.API.sourcelink.json
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\Bookstore.sqlite
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\publish\web.config
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\publish\appsettings.Development.json
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\publish\appsettings.json
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\publish\Mission11.API.deps.json
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\publish\Mission11.API.runtimeconfig.json
+C:\Users\gille\OneDrive\Documents\University\Enterprise Dev Hilton 413\Mission11\backend\Mission11.API\bin\Debug\net8.0\publish\Mission11.API.staticwebassets.endpoints.json
