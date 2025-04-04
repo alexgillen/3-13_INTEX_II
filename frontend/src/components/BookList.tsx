@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Book } from '../types/Book'
 import { useNavigate } from 'react-router-dom';
 import { fetchBooks } from '../api/BookAPI';
+import Pagination from './Pagination';
 
 function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [books, setBooks] = useState<Book[]>([]);
@@ -13,19 +14,19 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [isSorted, setIsSorted] = useState<boolean>(false);
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
-    const [loading, seltLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadBooks = async () => {
             try {
-                seltLoading(true);
+                setLoading(true);
                 const data = await fetchBooks(pageSize, pageNum, selectedCategories);
                 setBooks(data.books);
                 setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
             } catch (error) {
                 setError((error as Error).message);
             } finally {
-                seltLoading(false);
+                setLoading(false);
             }   
         };
 
@@ -101,50 +102,16 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
                     </div>
                 </div>
             ))}
-
-            <button
-                className='btn btn-secondary'
-                onClick={() => setPageNum(pageNum - 1)}
-                disabled={pageNum === 1}
-            >
-                Previous
-            </button>
-
-            {[...Array(totalPages)].map((_, index) => (
-                <button
-                    key={index + 1}
-                    className={`btn ${pageNum === index + 1 ? 'btn-primary' : 'btn-secondary'} mx-1`}
-                    onClick={() => setPageNum(index + 1)}
-                    disabled={pageNum === index + 1}
-                >
-                    {index + 1}
-                </button>
-            ))}
-
-            <button
-                className='btn btn-secondary'
-                onClick={() => setPageNum(pageNum + 1)}
-                disabled={pageNum === totalPages}
-            >
-                Next
-            </button>
-
-            <br />
-            <label className='mt-3'>
-                <strong>Results per page: </strong>
-                <select
-                    className='form-select w-auto d-inline-block ms-2'
-                    value={pageSize}
-                    onChange={(p) => {
-                        setPageSize(Number(p.target.value))
-                        setPageNum(1);
-                    }}
-                >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                </select>
-            </label>
+            <Pagination
+                currentPage={pageNum}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setPageNum}
+                onPageSizeChange={(newSize) => {
+                    setPageSize(newSize);
+                    setPageNum(1);
+                }}
+            />
         </>
     );
 }

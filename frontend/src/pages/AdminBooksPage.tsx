@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Book } from "../types/Book";
 import { deleteBook, fetchBooks } from "../api/BookAPI";
-import Pagination from "../components/Pagination";
 import NewBookForm from "../components/NewBookForm";
+import Pagination from "../components/Pagination";
 import EditBookForm from "../components/EditBookForm";
 
 
@@ -131,7 +131,7 @@ const AdminBooksPage = () => {
             </table>
 
             <Pagination
-                currnetPage={pageNum}
+                currentPage={pageNum}
                 totalPages={totalPages}
                 pageSize={pageSize}
                 onPageChange={setPageNum}
