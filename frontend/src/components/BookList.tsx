@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Book } from '../types/Book'
 import { useNavigate } from 'react-router-dom';
+import { fetchBooks } from '../api/BookAPI';
 
 function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [books, setBooks] = useState<Book[]>([]);
@@ -11,24 +12,24 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [isSorted, setIsSorted] = useState<boolean>(false);
     const navigate = useNavigate();
+    const [error, setError] = useState<string | null>(null);
+    const [loading, seltLoading] = useState(true);
 
     useEffect(() => {
-        const fetchBooks = async () => {
+        const loadBooks = async () => {
+            try {
+                seltLoading(true);
+                const data = await fetchBooks(pageSize, pageNum, selectedCategories);
+                setBooks(data.books);
+                setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
+            } catch (error) {
+                setError((error as Error).message);
+            } finally {
+                seltLoading(false);
+            }   
+        };
 
-            const categoryParams = selectedCategories
-                .map((category) => `categories=${encodeURIComponent(category)}`)
-                .join('&');
-
-            const response = await fetch(
-                `https://localhost:5001/api/BookStore?pageSize=${pageSize}&pageNum=${pageNum}${selectedCategories.length ? `&${categoryParams}` : ""}`
-            )
-            const data = await response.json();
-            setBooks(data.books);
-            setTotalItems(data.totalNumBooks);
-            setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
-        }
-        fetchBooks();
-
+        loadBooks();
     }, [pageSize, pageNum, selectedCategories]);
 
     useEffect(() => {
@@ -38,6 +39,9 @@ function BookList({selectedCategories}: {selectedCategories: string[]}) {
             setSortedBooks(books);
         }
     }, [books, isSorted]);
+
+    if (loading) return <p>Loading projects...</p>
+    if (error) return <p className='text-red-500'>Error: {error}</p>
 
     return (
         <>
