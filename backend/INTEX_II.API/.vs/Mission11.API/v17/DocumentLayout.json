@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\3-13_INTEX_II\\backend\\INTEX_II.API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|c:\\users\\gille\\onedrive\\documents\\university\\intex ii\\3-13_intex_ii\\backend\\intex_ii.api\\controllers\\bookstorecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|solutionrelative:controllers\\bookstorecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|c:\\users\\gille\\onedrive\\documents\\university\\intex ii\\3-13_intex_ii\\backend\\intex_ii.api\\controllers\\moviecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|solutionrelative:controllers\\moviecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|c:\\users\\gille\\onedrive\\documents\\university\\intex ii\\3-13_intex_ii\\backend\\intex_ii.api\\data\\moviedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -13,10 +13,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|c:\\users\\gille\\onedrive\\documents\\university\\intex ii\\3-13_intex_ii\\backend\\intex_ii.api\\data\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|solutionrelative:data\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|c:\\users\\gille\\onedrive\\documents\\university\\intex ii\\3-13_intex_ii\\backend\\intex_ii.api\\controllers\\moviecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38D758D0-5D51-4A6E-91B4-82FD184DCB8F}|Mission11.API.csproj|solutionrelative:controllers\\moviecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -57,27 +53,15 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "BookStoreController.cs",
-              "DocumentMoniker": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\3-13_INTEX_II\\backend\\INTEX_II.API\\Controllers\\BookStoreController.cs",
-              "RelativeDocumentMoniker": "Controllers\\BookStoreController.cs",
-              "ToolTip": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\3-13_INTEX_II\\backend\\INTEX_II.API\\Controllers\\BookStoreController.cs",
-              "RelativeToolTip": "Controllers\\BookStoreController.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABUAAAA3AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-07T17:11:59.718Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
               "Title": "MovieController.cs",
               "DocumentMoniker": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\3-13_INTEX_II\\backend\\INTEX_II.API\\Controllers\\MovieController.cs",
               "RelativeDocumentMoniker": "Controllers\\MovieController.cs",
               "ToolTip": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\3-13_INTEX_II\\backend\\INTEX_II.API\\Controllers\\MovieController.cs",
               "RelativeToolTip": "Controllers\\MovieController.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAYwCAAAAAvAAAAAAAAAA==",
+              "ViewState": "AgIAABwAAAAAAAAAAAAgwC0AAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-07T17:08:01.034Z"
+              "WhenOpened": "2025-04-07T17:08:01.034Z",
+              "EditorCaption": ""
             }
           ]
         }
