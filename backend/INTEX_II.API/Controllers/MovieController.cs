@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mission11.API.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Mission11.API.Controllers
 {
@@ -58,6 +59,7 @@ namespace Mission11.API.Controllers
 }
 
         [HttpPost("AddMovie")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult AddMovie([FromBody] Movie newMovie)
         {
            _movieContext.Movies.Add(newMovie);
@@ -84,6 +86,7 @@ namespace Mission11.API.Controllers
         // }
 
         [HttpPut("UpdateMovie/{show_id}")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult UpdateMovie(string show_id, [FromBody] Movie updatedMovie)
         {
             var existingMovie = _movieContext.Movies.Find(show_id);
@@ -111,6 +114,7 @@ namespace Mission11.API.Controllers
         }
 
         [HttpDelete("DeleteMovie/{show_id}")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult DeleteMovie(string show_id)
         {
            var movie = _movieContext.Movies.Find(show_id);
