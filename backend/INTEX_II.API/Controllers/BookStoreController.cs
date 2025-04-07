@@ -47,7 +47,7 @@ namespace Mission11.API.Controllers
                 .Select(b => b.Category)
                 .Distinct()
                 .ToList();
-            
+
             return Ok(categories);
         }
 
@@ -86,7 +86,7 @@ namespace Mission11.API.Controllers
 
             if (book == null)
             {
-                return NotFound(new {message = "Book not found" });
+                return NotFound(new { message = "Book not found" });
             }
 
             _bookContext.Books.Remove(book);
