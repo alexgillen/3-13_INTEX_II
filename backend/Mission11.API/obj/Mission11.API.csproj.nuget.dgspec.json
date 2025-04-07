@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gille\\OneDrive\\Documents\\University\\Enterprise Dev Hilton 413\\Mission11\\backend\\Mission11.API\\Mission11.API.csproj": {}
+    "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\INTEX_II _WebApp\\backend\\Mission11.API\\Mission11.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gille\\OneDrive\\Documents\\University\\Enterprise Dev Hilton 413\\Mission11\\backend\\Mission11.API\\Mission11.API.csproj": {
+    "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\INTEX_II _WebApp\\backend\\Mission11.API\\Mission11.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gille\\OneDrive\\Documents\\University\\Enterprise Dev Hilton 413\\Mission11\\backend\\Mission11.API\\Mission11.API.csproj",
+        "projectUniqueName": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\INTEX_II _WebApp\\backend\\Mission11.API\\Mission11.API.csproj",
         "projectName": "Mission11.API",
-        "projectPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\Enterprise Dev Hilton 413\\Mission11\\backend\\Mission11.API\\Mission11.API.csproj",
+        "projectPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\INTEX_II _WebApp\\backend\\Mission11.API\\Mission11.API.csproj",
         "packagesPath": "C:\\Users\\gille\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\Enterprise Dev Hilton 413\\Mission11\\backend\\Mission11.API\\obj\\",
+        "outputPath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\INTEX_II _WebApp\\backend\\Mission11.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
