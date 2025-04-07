@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2zbu1x2Ohac=",
+  "dgSpecHash": "cWalRnEbksg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\INTEX_II _WebApp\\backend\\Mission11.API\\Mission11.API.csproj",
+  "projectFilePath": "C:\\Users\\gille\\OneDrive\\Documents\\University\\INTEX II\\3-13_INTEX_II\\backend\\INTEX_II.API\\Mission11.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\gille\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\gille\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
