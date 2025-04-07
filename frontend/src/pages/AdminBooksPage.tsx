@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Book } from "../types/Book";
-import { deleteBook, fetchBooks } from "../api/BookAPI";
+import { deleteBook, fetchBooks } from "../api/MovieAPI";
 import NewBookForm from "../components/NewBookForm";
 import Pagination from "../components/Pagination";
 import EditBookForm from "../components/EditBookForm";
-
 
 const AdminBooksPage = () => {
     const [books, setBooks] = useState<Book[]>([]);

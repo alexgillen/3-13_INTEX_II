@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Book } from '../types/Book'
 import { useNavigate } from 'react-router-dom';
-import { fetchBooks } from '../api/BookAPI';
+import { fetchBooks } from '../api/MovieAPI';
 import Pagination from './Pagination';
 
 function BookList({selectedCategories}: {selectedCategories: string[]}) {
