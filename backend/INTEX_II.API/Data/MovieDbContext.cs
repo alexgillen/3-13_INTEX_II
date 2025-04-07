@@ -1,17 +1,3 @@
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-
-//namespace Mission11.API.Data
-//{
-//    public class MovieDbContext : DbContext
-//    {
-//        public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
-//        {
-//        }
-//        public DbSet<Movie> Movies { get; set; }
-//    }
-//}
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

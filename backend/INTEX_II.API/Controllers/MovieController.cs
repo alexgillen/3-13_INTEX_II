@@ -15,17 +15,16 @@ namespace Mission11.API.Controllers
         }
 
         [HttpGet("GetMovies")]
-        public IActionResult Get(int pageSize = 10, int pageNum = 1, [FromQuery] List<string>? categories = null)
+        public IActionResult Get(int pageSize = 10, int pageNum = 1, [FromQuery] List<string>? genres = null)
         {
             var query = _movieContext.Movies.AsQueryable();
 
             //Okay when we come back to filtering. We are getting categories passed into the route and we need to do someting with it. 
             //That's what the code below this is for, rn it does nothing. 
-
-            //if (categories != null && categories.Any())
-            //{
-            //    query = query.Where(m => categories.Contains(m.description));
-            //}
+            if (genres != null && genres.Any())
+            {
+                query = query.Where(m => genres.Any(g => !string.IsNullOrEmpty(m.genres) && m.genres.Contains(g)));
+            }
 
             var totalNumMovies = query.Count();
 
@@ -43,60 +42,89 @@ namespace Mission11.API.Controllers
             return Ok(someObject);
         }
 
-        //[HttpGet("GetCategories")]
-        //public IActionResult GetCategories()
-        //{
-        //    var categories = _movieContext.movies_titles
-        //        .Select(b => b.Category)
-        //        .Distinct()
-        //        .ToList();
+        [HttpGet("GetGenres")]
+        public IActionResult GetGenres()
+        {
+            var genreList = _movieContext.Movies
+                .Where(m => m.genres != null)
+                .AsEnumerable()
+                .SelectMany(m => m.genres.Split(new[] { ',' }, StringSplitOptions.None))
+                .Select(g => g.Trim())
+                .Distinct()
+                .OrderBy(g => g)
+                .ToList();
 
-        //    return Ok(categories);
-        //}
+            return Ok(genreList);
+}
 
-        //[HttpPost("AddBook")]
-        //public IActionResult AddBook([FromBody] Book newBook)
-        //{
-        //    _bookContext.Books.Add(newBook);
-        //    _bookContext.SaveChanges();
-        //    return Ok(newBook);
-        //}
+        [HttpPost("AddMovie")]
+        public IActionResult AddMovie([FromBody] Movie newMovie)
+        {
+           _movieContext.Movies.Add(newMovie);
+           _movieContext.SaveChanges();
+           return Ok(newMovie);
+        }
 
-        //[HttpPut("UpdateBook/{bookId}")]
-        //public IActionResult UpdateBook(int bookId, [FromBody] Book updatedBook)
-        //{
-        //    var existingBook = _bookContext.Books.Find(bookId);
+        // [HttpPut("UpdateMovie/{show_id}")]
+        // public IActionResult UpdateMovie(int show_id, [FromBody] Movie updatedMovie)
+        // {
+        //    var existingMovie = _movieContext.Movies.Find(show_id);
 
-        //    existingBook.Title = updatedBook.Title;
-        //    existingBook.Author = updatedBook.Author;
-        //    existingBook.Publisher = updatedBook.Publisher;
-        //    existingBook.ISBN = updatedBook.ISBN;
-        //    existingBook.Classification = updatedBook.Classification;
-        //    existingBook.Category = updatedBook.Category;
-        //    existingBook.PageCount = updatedBook.PageCount;
-        //    existingBook.Price = updatedBook.Price;
+        //    existingMovie.type = updatedMovie.type;
+        //    existingMovie.Description = updatedMovie.Description;
+        //    existingMovie.Poster = updatedMovie.Poster;
+        //    existingMovie.Rating = updatedMovie.Rating;
+        //    existingMovie.Category = updatedMovie.Category;
+        //    existingMovie.Price = updatedMovie.Price;
 
-        //    _bookContext.Books.Update(existingBook);
-        //    _bookContext.SaveChanges();
+        //    _movieContext.Movies.Update(existingMovie);
+        //    _movieContext.SaveChanges();
 
-        //    return Ok(existingBook);
-        //}
+        //    return Ok(existingMovie);
+        // }
 
-        //[HttpDelete("DeleteBook/{bookId}")]
-        //public IActionResult DeleteBook(int bookId)
-        //{
-        //    var book = _bookContext.Books.Find(bookId);
+        [HttpPut("UpdateMovie/{show_id}")]
+        public IActionResult UpdateMovie(string show_id, [FromBody] Movie updatedMovie)
+        {
+            var existingMovie = _movieContext.Movies.Find(show_id);
+            if (existingMovie == null)
+            {
+                return NotFound();
+            }
 
-        //    if (book == null)
-        //    {
-        //        return NotFound(new {message = "Book not found" });
-        //    }
+            // Basic fields
+            existingMovie.type = updatedMovie.type;
+            existingMovie.title = updatedMovie.title;
+            existingMovie.director = updatedMovie.director;
+            existingMovie.cast = updatedMovie.cast;
+            existingMovie.country = updatedMovie.country;
+            existingMovie.release_year = updatedMovie.release_year;
+            existingMovie.rating = updatedMovie.rating;
+            existingMovie.duration = updatedMovie.duration;
+            existingMovie.description = updatedMovie.description;
+            existingMovie.genres = updatedMovie.genres;
 
-        //    _bookContext.Books.Remove(book);
-        //    _bookContext.SaveChanges();
+            _movieContext.Movies.Update(existingMovie);
+            _movieContext.SaveChanges();
 
-        //    return NoContent();
-        //}
+            return Ok(existingMovie);
+        }
+
+        [HttpDelete("DeleteMovie/{show_id}")]
+        public IActionResult DeleteMovie(string show_id)
+        {
+           var movie = _movieContext.Movies.Find(show_id);
+
+           if (movie == null)
+           {
+               return NotFound(new {message = "Movie not found" });
+           }
+
+           _movieContext.Movies.Remove(movie);
+           _movieContext.SaveChanges();
+
+           return NoContent();
+        }
     }
 }
 
