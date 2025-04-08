@@ -34,7 +34,7 @@ namespace CineNiche.API.Services
             }
         }
 
-        public async Task<UserRating> GetUserRatingForShowAsync(Guid userId, int showId)
+        public async Task<UserRating> GetUserRatingForShowAsync(Guid userId, string showId)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace CineNiche.API.Services
             }
         }
 
-        public async Task<List<UserRating>> GetAllRatingsForShowAsync(int showId)
+        public async Task<List<UserRating>> GetAllRatingsForShowAsync(string showId)
         {
             try
             {
@@ -144,7 +144,7 @@ namespace CineNiche.API.Services
             }
         }
 
-        public async Task<bool> DeleteUserRatingForShowAsync(Guid userId, int showId)
+        public async Task<bool> DeleteUserRatingForShowAsync(Guid userId, string showId)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace CineNiche.API.Services
             }
         }
 
-        public async Task<double> GetAverageRatingForShowAsync(int showId)
+        public async Task<double> GetAverageRatingForShowAsync(string showId)
         {
             try
             {
@@ -190,7 +190,7 @@ namespace CineNiche.API.Services
             }
         }
 
-        public async Task<Dictionary<int, int>> GetRatingDistributionForShowAsync(int showId)
+        public async Task<Dictionary<int, int>> GetRatingDistributionForShowAsync(string showId)
         {
             try
             {

@@ -18,6 +18,7 @@ namespace CineNiche.API.Services
         // Role management
         Task<bool> AssignRoleAsync(Guid userId, string role);
         Task<List<User>> GetUsersByRoleAsync(string role);
+        Task<List<User>> GetAllUsersAsync();
         
         // User status management
         Task<bool> UpdateLastLoginAsync(Guid userId);

@@ -48,12 +48,20 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Database context setup (preserved from original)
-builder.Services.AddDbContext<BookDbContext>(options =>
+// builder.Services.AddDbContext<BookDbContext>(options =>
+//     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register the new UserDbContext for user management (Corrected name)
+builder.Services.AddDbContext<UserDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("UserConnection")));
+
+// Add registration for MovieDbContext
+builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register the new AppDbContext for user management
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("UserConnection")));
+// Add registration for RatingDbContext
+builder.Services.AddDbContext<RatingDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("RatingConnection")));
 
 // Configure Stytch authentication
 builder.Services.Configure<StytchConfig>(
@@ -61,6 +69,9 @@ builder.Services.Configure<StytchConfig>(
 
 // Register HttpClient for Stytch service
 builder.Services.AddHttpClient<IStytchService, StytchService>();
+
+// Register TokenService for JWT operations
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Register User service
 builder.Services.AddScoped<IUserService, UserService>();
@@ -76,16 +87,32 @@ builder.Services.AddAuthentication(options =>
 {
     var stytchConfig = builder.Configuration.GetSection(StytchConfig.SectionName).Get<StytchConfig>();
     
+    // Validate configuration
+    if (stytchConfig == null)
+    {
+        throw new InvalidOperationException("Stytch configuration section is missing. Please check your appsettings.json file.");
+    }
+
+    if (string.IsNullOrEmpty(stytchConfig.JwtSigningKey))
+    {
+        throw new InvalidOperationException("JWT signing key is missing in Stytch configuration. Please provide a strong key in appsettings.json.");
+    }
+
+    if (string.IsNullOrEmpty(stytchConfig.ProjectId))
+    {
+        throw new InvalidOperationException("Project ID is missing in Stytch configuration. Please provide the Stytch project ID in appsettings.json.");
+    }
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = stytchConfig?.ProjectId ?? "default-issuer",
-        ValidAudience = stytchConfig?.ProjectId ?? "default-audience",
+        ValidIssuer = stytchConfig.ProjectId,
+        ValidAudience = stytchConfig.ProjectId,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(stytchConfig?.JwtSigningKey ?? "fallback-signing-key-that-is-at-least-32-chars"))
+            Encoding.UTF8.GetBytes(stytchConfig.JwtSigningKey))
     };
     
     options.Events = new JwtBearerEvents
@@ -108,14 +135,15 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AuthenticatedUser", policy => policy.RequireRole("User", "Admin"));
 });
 
-// CORS configuration (preserved from original but expanded)
+// CORS configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.AllowAnyOrigin() // Allows requests from any origin
-               .AllowAnyMethod() // Allows GET, POST, PUT, etc.
-               .AllowAnyHeader(); // Allows any headers
+        builder.WithOrigins("http://localhost:3501")  // Frontend URL
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
 
@@ -131,7 +159,8 @@ if (app.Environment.IsDevelopment())
 // CORS must be called before auth middleware
 app.UseCors("AllowAll");
 
-app.UseHttpsRedirection();
+// Comment out HTTPS redirection for development
+// app.UseHttpsRedirection();
 
 // Add authentication middleware before authorization
 app.UseAuthentication();

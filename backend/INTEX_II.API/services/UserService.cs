@@ -241,5 +241,18 @@ namespace CineNiche.API.Services
                 return false;
             }
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                return await _context.Users.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all users");
+                return new List<User>();
+            }
+        }
     }
 }

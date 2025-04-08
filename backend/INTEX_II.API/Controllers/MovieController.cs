@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mission11.API.Data;
+using CineNiche.API.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Mission11.API.Controllers

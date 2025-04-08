@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Mission11.API.Data
+namespace CineNiche.API.Models
 {
     public class Movie
     {

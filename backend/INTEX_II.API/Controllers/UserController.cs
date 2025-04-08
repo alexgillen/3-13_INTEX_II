@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using CineNiche.API.Models;
 using CineNiche.API.Services;
 using CineNiche.Auth.Services;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace CineNiche.API.Controllers
 {
@@ -15,11 +18,57 @@ namespace CineNiche.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IStytchService _stytchService;
+        private readonly ILogger<UserController> _logger;
+        private readonly ITokenService _tokenService;
 
-        public UserController(IUserService userService, IStytchService stytchService)
+        public UserController(
+            IUserService userService, 
+            IStytchService stytchService, 
+            ILogger<UserController> logger,
+            ITokenService tokenService)
         {
             _userService = userService;
             _stytchService = stytchService;
+            _logger = logger;
+            _tokenService = tokenService;
+        }
+
+        // Helper method to reliably extract user ID from claims
+        private string GetUserIdFromClaims()
+        {
+            // Log all claims for debugging
+            _logger.LogInformation("Claims in token: " + 
+                string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
+
+            // Try multiple claim types that might contain the user ID
+            var userId = User.FindFirst("sub")?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                _logger.LogInformation($"Found user ID in 'sub' claim: {userId}");
+                return userId;
+            }
+
+            userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                _logger.LogInformation($"Found user ID in NameIdentifier claim: {userId}");
+                return userId;
+            }
+
+            // Try to get the authentication token and extract user ID directly
+            if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authHeader))
+            {
+                var token = authHeader.ToString().Replace("Bearer ", "");
+                string extractedUserId, role;
+                if (_tokenService.ReadTokenInfo(token, out extractedUserId, out role))
+                {
+                    _logger.LogInformation($"Extracted user ID from token: {extractedUserId}");
+                    return extractedUserId;
+                }
+            }
+
+            _logger.LogWarning("Failed to extract user ID from claims or token");
+            return null;
         }
 
         [HttpGet]
@@ -37,16 +86,17 @@ namespace CineNiche.API.Controllers
         public async Task<IActionResult> GetUserProfile()
         {
             // Get the user ID from claims
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = GetUserIdFromClaims();
             if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest(new { message = "Invalid token" });
+                return BadRequest(new { message = "Invalid token - Could not extract user ID" });
             }
 
             // Get user from database
             var user = await _userService.GetUserByExternalIdAsync(userId);
             if (user == null)
             {
+                _logger.LogWarning($"User not found with ExternalAuthId: {userId}");
                 return NotFound(new { message = "User not found" });
             }
 
@@ -56,6 +106,8 @@ namespace CineNiche.API.Controllers
                 email = user.Email,
                 firstName = user.FirstName,
                 lastName = user.LastName,
+                age = user.Age,
+                gender = user.Gender,
                 profileImageUrl = user.ProfileImageUrl,
                 role = user.Role,
                 isActive = user.IsActive,
@@ -70,31 +122,74 @@ namespace CineNiche.API.Controllers
         public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateProfileRequest request)
         {
             // Get the user ID from claims
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = GetUserIdFromClaims();
             if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest(new { message = "Invalid token" });
+                return BadRequest(new { message = "Invalid token - Could not extract user ID" });
             }
+
+            _logger.LogInformation($"Updating profile for user with ExternalAuthId: {userId}");
 
             // Get user from database
             var user = await _userService.GetUserByExternalIdAsync(userId);
             if (user == null)
             {
+                _logger.LogWarning($"User not found with ExternalAuthId: {userId}");
                 return NotFound(new { message = "User not found" });
             }
 
             // Update user properties
-            user.FirstName = request.FirstName;
-            user.LastName = request.LastName;
+            if (request.FirstName != null)
+                user.FirstName = request.FirstName;
+                
+            if (request.LastName != null)
+                user.LastName = request.LastName;
+                
             if (!string.IsNullOrEmpty(request.ProfileImageUrl))
             {
                 user.ProfileImageUrl = request.ProfileImageUrl;
             }
+            
+            // Update age and gender if provided
+            if (request.Age.HasValue)
+            {
+                user.Age = request.Age;
+                _logger.LogInformation($"Updating age to: {request.Age}");
+            }
+            
+            if (!string.IsNullOrEmpty(request.Gender))
+            {
+                user.Gender = request.Gender;
+                _logger.LogInformation($"Updating gender to: {request.Gender}");
+            }
+            
+            // Update phone if provided
+            if (!string.IsNullOrEmpty(request.Phone))
+            {
+                user.Phone = request.Phone;
+                _logger.LogInformation($"Updating phone to: {request.Phone}");
+            }
 
             // Save changes
             await _userService.UpdateUserAsync(user);
+            _logger.LogInformation($"Profile updated successfully for user: {user.Email}");
 
-            return Ok(new { message = "Profile updated successfully" });
+            return Ok(new 
+            { 
+                message = "Profile updated successfully",
+                user = new
+                {
+                    id = user.Id,
+                    email = user.Email,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    age = user.Age,
+                    gender = user.Gender,
+                    phone = user.Phone,
+                    profileImageUrl = user.ProfileImageUrl,
+                    role = user.Role
+                }
+            });
         }
 
         [HttpPost]
@@ -157,9 +252,12 @@ namespace CineNiche.API.Controllers
     // Request classes
     public class UpdateProfileRequest
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string ProfileImageUrl { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? ProfileImageUrl { get; set; }
+        public int? Age { get; set; }
+        public string? Gender { get; set; }
+        public string? Phone { get; set; }
     }
 
     public class ChangeRoleRequest

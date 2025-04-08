@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CineNiche.API.Models;
 
 namespace Mission11.API.Data
 {

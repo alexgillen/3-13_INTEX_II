@@ -23,7 +23,7 @@ namespace CineNiche.API.Controllers
 
         [HttpGet]
         [Route("show/{showId}")]
-        public async Task<IActionResult> GetShowRatings(int showId)
+        public async Task<IActionResult> GetShowRatings(string showId)
         {
             var ratings = await _ratingService.GetAllRatingsForShowAsync(showId);
             var average = await _ratingService.GetAverageRatingForShowAsync(showId);
@@ -41,7 +41,7 @@ namespace CineNiche.API.Controllers
         [HttpGet]
         [Authorize]
         [Route("user/{showId}")]
-        public async Task<IActionResult> GetUserRatingForShow(int showId)
+        public async Task<IActionResult> GetUserRatingForShow(string showId)
         {
             // Get the user ID from claims
             var externalUserId = User.FindFirst("sub")?.Value;
@@ -104,7 +104,7 @@ namespace CineNiche.API.Controllers
         [HttpDelete]
         [Authorize]
         [Route("{showId}")]
-        public async Task<IActionResult> DeleteRating(int showId)
+        public async Task<IActionResult> DeleteRating(string showId)
         {
             // Get the user ID from claims
             var externalUserId = User.FindFirst("sub")?.Value;
@@ -156,7 +156,7 @@ namespace CineNiche.API.Controllers
     // Request classes
     public class RateShowRequest
     {
-        public int ShowId { get; set; }
+        public string ShowId { get; set; }
         public int Rating { get; set; }
     }
 }

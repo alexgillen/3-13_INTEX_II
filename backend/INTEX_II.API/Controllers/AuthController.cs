@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using CineNiche.API.Models;
 using CineNiche.API.Services;
 using CineNiche.Auth.Services;
+using Microsoft.Extensions.Logging;
 
 namespace CineNiche.API.Controllers
 {
@@ -15,119 +16,156 @@ namespace CineNiche.API.Controllers
         private readonly IStytchService _stytchService;
         private readonly ITokenService _tokenService;
         private readonly IUserService _userService;
+        private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             IStytchService stytchService,
             ITokenService tokenService,
-            IUserService userService)
+            IUserService userService,
+            ILogger<AuthController> logger)
         {
             _stytchService = stytchService;
             _tokenService = tokenService;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            // Validate request
-            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            try
             {
-                return BadRequest(new { message = "Email and password are required" });
+                // Validate request
+                if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+                {
+                    return BadRequest(new { message = "Email and password are required" });
+                }
+
+                _logger.LogInformation($"Registration attempt for email: {request.Email}");
+
+                // Check if user already exists
+                var existingUser = await _userService.GetUserByEmailAsync(request.Email);
+                if (existingUser != null)
+                {
+                    _logger.LogWarning($"Registration failed: Email {request.Email} already exists");
+                    return BadRequest(new { message = "User with this email already exists" });
+                }
+
+                _logger.LogInformation($"Creating user in Stytch for email: {request.Email}");
+                
+                // Create user in Stytch
+                var stytchResult = await _stytchService.CreateUserAsync(
+                    request.Email, 
+                    request.Password,
+                    request.FirstName ?? "",
+                    request.LastName ?? ""
+                );
+
+                if (!stytchResult.Success)
+                {
+                    _logger.LogError($"Stytch user creation failed: {stytchResult.Error}");
+                    return StatusCode(500, new { message = $"Stytch API error: {stytchResult.Error}" });
+                }
+
+                _logger.LogInformation($"User created in Stytch with ID: {stytchResult.UserId}");
+
+                // Create user in our database
+                var userToCreate = new User
+                {
+                    ExternalAuthId = stytchResult.UserId,
+                    Email = request.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Role = "User" // Default role is User
+                };
+
+                var createdUser = await _userService.CreateUserAsync(userToCreate);
+                if (createdUser == null)
+                {
+                    _logger.LogError($"Failed to create user in local database after Stytch registration");
+                    return StatusCode(500, new { message = "Failed to create user record after Stytch registration" });
+                }
+
+                _logger.LogInformation($"User created in local database with ID: {createdUser}");
+
+                // Send email verification
+                var verificationResult = await _stytchService.SendEmailVerificationAsync(request.Email);
+                if (!verificationResult.Success)
+                {
+                    _logger.LogWarning($"Failed to send verification email: {verificationResult.Error}");
+                }
+
+                return Ok(new { 
+                    message = "User registered successfully", 
+                    userId = createdUser,
+                    emailVerificationSent = verificationResult.Success
+                });
             }
-
-            // Check if user already exists
-            var existingUser = await _userService.GetUserByEmailAsync(request.Email);
-            if (existingUser != null)
+            catch (Exception ex)
             {
-                return BadRequest(new { message = "User with this email already exists" });
+                _logger.LogError(ex, "Unexpected error during registration");
+                return StatusCode(500, new { message = "An unexpected error occurred during registration" });
             }
-
-            // Create user in Stytch
-            var stytchResult = await _stytchService.CreateUserAsync(
-                request.Email, 
-                request.Password,
-                request.FirstName ?? "",
-                request.LastName ?? ""
-            );
-
-            if (!stytchResult.Success)
-            {
-                return StatusCode(500, new { message = stytchResult.Error });
-            }
-
-            // Create user in our database
-            var user = new User
-            {
-                ExternalAuthId = stytchResult.UserId,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Role = "User" // Default role is User
-            };
-
-            var userId = await _userService.CreateUserAsync(user);
-            if (userId == Guid.Empty)
-            {
-                return StatusCode(500, new { message = "Failed to create user record" });
-            }
-
-            // Send email verification
-            await _stytchService.SendEmailVerificationAsync(request.Email);
-
-            return Ok(new { 
-                message = "User registered successfully", 
-                userId = userId,
-                emailVerificationSent = true
-            });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            // Authenticate with Stytch
-            var authResult = await _stytchService.AuthenticateByEmailAsync(request.Email, request.Password);
-            if (!authResult.Success)
+            // DEV MODE ONLY: For development purposes, bypass Stytch authentication
+            // and allow login with just an email lookup in our local database
+            _logger.LogWarning("⚠️ USING DEVELOPMENT MODE LOGIN - NOT SECURE FOR PRODUCTION ⚠️");
+            
+            try
             {
-                return Unauthorized(new { message = "Invalid credentials" });
-            }
-
-            // Get user from our database
-            var user = await _userService.GetUserByExternalIdAsync(authResult.UserId);
-            if (user == null)
-            {
-                // If user exists in Stytch but not in our DB, create them
-                user = new User
-                {
-                    ExternalAuthId = authResult.UserId,
-                    Email = request.Email,
-                    Role = "User" // Default role
-                };
+                // Search for user by email in our database
+                var user = await _userService.GetUserByEmailAsync(request.Email);
                 
-                await _userService.CreateUserAsync(user);
+                if (user == null)
+                {
+                    _logger.LogInformation($"Login failed: User with email {request.Email} not found");
+                    return Unauthorized(new { message = "Invalid credentials" });
+                }
+                
+                _logger.LogInformation($"Login successful for user: {user.Email} (ID: {user.Id})");
+                
+                // Check if user is active
+                if (!user.IsActive)
+                {
+                    return Unauthorized(new { message = "This account has been deactivated" });
+                }
+                
+                // Update last login time
+                user.LastLogin = DateTime.UtcNow;
+                await _userService.UpdateUserAsync(user);
+                
+                // Generate a token with the correct role using TokenService
+                // Ensure that ExternalAuthId is not empty for token generation
+                if (string.IsNullOrEmpty(user.ExternalAuthId))
+                {
+                    _logger.LogWarning($"User {user.Id} has no ExternalAuthId. Setting a temporary one for development.");
+                    user.ExternalAuthId = user.Id.ToString();
+                    await _userService.UpdateUserAsync(user);
+                }
+                
+                // Debug the values being used for token generation
+                _logger.LogInformation($"Generating token with: UserId={user.ExternalAuthId}, Role={user.Role}");
+                var token = _tokenService.GenerateJwtToken(user.ExternalAuthId, user.Role);
+                
+                return Ok(new
+                {
+                    userId = user.Id,
+                    email = user.Email,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    role = user.Role,
+                    token = token
+                });
             }
-
-            // Check if user is active
-            if (!user.IsActive)
+            catch (Exception ex)
             {
-                return Unauthorized(new { message = "This account has been deactivated" });
+                _logger.LogError(ex, "Error during login");
+                return StatusCode(500, new { message = "An unexpected error occurred during login" });
             }
-
-            // Update last login time
-            user.LastLogin = DateTime.UtcNow;
-            await _userService.UpdateUserAsync(user);
-
-            // Generate a token with the correct role using TokenService
-            var token = _tokenService.GenerateJwtToken(authResult.UserId, user.Role);
-
-            return Ok(new
-            {
-                userId = user.Id,
-                email = user.Email,
-                firstName = user.FirstName,
-                lastName = user.LastName,
-                role = user.Role,
-                token = token
-            });
         }
 
         [HttpPost("logout")]
@@ -153,30 +191,66 @@ namespace CineNiche.API.Controllers
                 message = result.Success ? "Password reset email sent" : result.Error 
             });
         }
+
+        [HttpGet("debug-token")]
+        public IActionResult DebugToken()
+        {
+            try
+            {
+                // Get the Authorization header
+                if (!Request.Headers.TryGetValue("Authorization", out var authHeader))
+                {
+                    return BadRequest(new { message = "No Authorization header found" });
+                }
+                
+                // Extract the token
+                var token = authHeader.ToString().Replace("Bearer ", "");
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest(new { message = "No token found in Authorization header" });
+                }
+                
+                // Decode the token
+                string userId, role;
+                bool isValid = _tokenService.ReadTokenInfo(token, out userId, out role);
+                
+                return Ok(new
+                {
+                    isValid,
+                    userId,
+                    role,
+                    message = isValid ? "Token is valid" : "Token is invalid"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error parsing token: {ex.Message}" });
+            }
+        }
     }
 
     // Request classes
     public class RegisterRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 
     public class LoginRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 
     public class LogoutRequest
     {
-        public string SessionId { get; set; }
+        public string? SessionId { get; set; }
     }
 
     public class ResetPasswordRequest
     {
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }
