@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Book } from "../types/Book";
-import { addBook } from "../api/MovieAPI";
+// import { addBook } from "../api/MovieAPI";
 
 interface NewBookFormProps {
     onSuccess: () => void;
@@ -26,7 +26,7 @@ const NewBookForm = ({onSuccess, onCancel}: NewBookFormProps) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await addBook(formData);
+        // await addBook(formData);
         onSuccess();
     }
 
