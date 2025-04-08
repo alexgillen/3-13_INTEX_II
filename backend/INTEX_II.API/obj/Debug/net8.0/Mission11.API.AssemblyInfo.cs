@@ -13,11 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Mission11.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD:backend/INTEX_II.API/obj/Debug/net8.0/Mission11.API.AssemblyInfo.cs
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f245ca154a545ce246213a2f0ec2f6b423abb04f")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca2dd542bfdf9dfdb7efa6f90c6ab4b74f08ec76")]
->>>>>>> abcc87d (WIP: partial updates before rebase):backend/Mission11.API/obj/Debug/net8.0/Mission11.API.AssemblyInfo.cs
 [assembly: System.Reflection.AssemblyProductAttribute("Mission11.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Mission11.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,7 +1,7 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
-import MovieTester from './pages/MovieTester'
+import AdminMoviesPage from './pages/AdminMoviesPage'
 
 function App() {
 
@@ -10,7 +10,7 @@ function App() {
       <CartProvider>
         <Router>
           <Routes>
-            <Route path='/' element={<MovieTester />} />
+            <Route path='/admin' element={<AdminMoviesPage />} />
           </Routes>
         </Router>
       </CartProvider>

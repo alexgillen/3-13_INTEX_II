@@ -5,7 +5,7 @@ interface FetchMoviesResponse {
     totalNumMovies: number;
 }
 
-const API_URL = "https://localhost:5001/api/Movie/GetMovie"
+const API_URL = "https://localhost:5001/api/Movie"
 
 export const fetchMovies = async (
     pageSize: Number,
@@ -18,7 +18,7 @@ export const fetchMovies = async (
             .join('&');
 
         const response = await fetch(
-            `${API_URL}?pageSize=${pageSize}&pageNum=${pageNum}${selectedGenres.length ? `&${genreParams}` : ""}`
+            `${API_URL}/GetMovies?pageSize=${pageSize}&pageNum=${pageNum}${selectedGenres.length ? `&${genreParams}` : ""}`
         );
 
     if (!response.ok) {
